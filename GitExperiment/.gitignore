@@ -10,6 +10,9 @@ build/
 *.pdb
 *.sln
 
+# dependencies
+vcpkg/
+
 # artifacts
 *.exe
 *.dll
