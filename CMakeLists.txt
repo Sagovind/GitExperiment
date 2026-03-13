@@ -13,8 +13,15 @@ target_link_libraries(ci_cd_cpp_demo PRIVATE mathlib)
 
 enable_testing()
 
+include(FetchContent)
+FetchContent_Declare(
+  googletest
+  URL https://github.com/google/googletest/archive/refs/tags/v1.14.0.zip
+)
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+FetchContent_MakeAvailable(googletest)
+
 # Unit test target
-find_package(GTest REQUIRED)
 add_executable(test_math tests/test_math.cpp)
 target_link_libraries(test_math PRIVATE mathlib GTest::gtest_main)
 add_test(NAME math_test COMMAND test_math)
