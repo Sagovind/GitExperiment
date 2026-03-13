@@ -11,8 +11,8 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install CMake
-        uses: lukka/get-cmake@latest
+      - name: CMake Version
+        run: cmake --version
       - name: Configure
         run: |
           mkdir build
