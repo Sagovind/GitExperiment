@@ -1,35 +1,33 @@
-name: CI
+name: Experiment CI
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
   pull_request:
-    branches: [main]
+    branches: [ main ]
 
 jobs:
   build-test:
-    runs-on: ubuntu-latest
-
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: lukka/get-cmake@v4
-        with:
-          cmake-version: "3.25.0"
+      - name: CMake Version
+        run: cmake --version
       - name: Configure
         run: |
-          mkdir -p build
+          mkdir build
           cd build
           cmake ..
       - name: Build
         run: |
           cd build
           cmake --build . --config Release
-      - name: Run tests
+      - name: Test
         run: |
           cd build
-          ctest --output-on-failure
+          ctest --output-on-failure -C Release
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ci-cd-cpp-demo-artifact
-          path: build/ci_cd_cpp_demo
+          name: app-binary
+          path: build/Release/app.exe
