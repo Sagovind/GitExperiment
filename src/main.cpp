@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include "math.hpp"
 
 int main(int argc, char** argv) {
