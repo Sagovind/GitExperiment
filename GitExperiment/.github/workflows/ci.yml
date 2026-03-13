@@ -1,0 +1,33 @@
+name: Experiment CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install CMake
+        uses: lukka/get-cmake@v4
+      - name: Configure
+        run: |
+          mkdir build
+          cd build
+          cmake ..
+      - name: Build
+        run: |
+          cd build
+          cmake --build . --config Release
+      - name: Test
+        run: |
+          cd build
+          ctest --output-on-failure -C Release
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-binary
+          path: build/Release/app.exe

@@ -1,0 +1,28 @@
+pipeline {
+  agent any
+
+  stages {
+    stage('Checkout') {
+      steps {
+        checkout scm
+      }
+    }
+    stage('Build') {
+      steps {
+        bat 'mkdir build'
+        bat 'cd build && cmake ..'
+        bat 'cd build && cmake --build . --config Release'
+      }
+    }
+    stage('Test') {
+      steps {
+        bat 'cd build && ctest --output-on-failure -C Release'
+      }
+    }
+    stage('Archive') {
+      steps {
+        archiveArtifacts artifacts: 'build/Release/app.exe', fingerprint: true
+      }
+    }
+  }
+}

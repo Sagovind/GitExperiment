@@ -1,0 +1,21 @@
+# CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+build/
+
+# Visual Studio
+*.vcxproj*
+*.pdb
+*.sln
+
+# artifacts
+*.exe
+*.dll
+*.lib
+*.log
+
+# OS
+*.DS_Store
+Thumbs.db
