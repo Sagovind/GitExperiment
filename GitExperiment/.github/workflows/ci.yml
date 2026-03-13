@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install CMake
-        uses: lukka/get-cmake@v4
+        uses: lukka/get-cmake@latest
       - name: Configure
         run: |
           mkdir build
