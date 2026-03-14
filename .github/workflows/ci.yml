@@ -1,4 +1,4 @@
-name: Experiment CI
+name: Experiment CI Flow
 
 on:
   push:
@@ -8,26 +8,43 @@ on:
 
 jobs:
   build-test:
-    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            build_cmd: cmake --build build --config Release
+            test_cmd: ctest --test-dir build --output-on-failure -C Release
+            artifact_name: app-binary-windows
+            artifact_path: build/Release/app.exe
+          - os: ubuntu-latest
+            build_cmd: cmake --build build
+            test_cmd: ctest --test-dir build --output-on-failure
+            artifact_name: app-binary-linux
+            artifact_path: build/app
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - name: CMake Version
         run: cmake --version
+      - name: Cache CMake build directory
+        uses: actions/cache@v4
+        with:
+          path: build
+          key: ${{ runner.os }}-cmake-${{ hashFiles('CMakeLists.txt', 'src/**', 'tests/**') }}
+          restore-keys: |
+            ${{ runner.os }}-cmake-
       - name: Configure
-        run: |
-          mkdir build
-          cd build
-          cmake ..
+        run: cmake -S . -B build
+
       - name: Build
-        run: |
-          cd build
-          cmake --build . --config Release
+        run: ${{ matrix.build_cmd }}
+
       - name: Test
-        run: |
-          cd build
-          ctest --output-on-failure -C Release
+        run: ${{ matrix.test_cmd }}
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: app-binary
-          path: build/Release/app.exe
+          name: ${{ matrix.artifact_name }}
+          path: ${{ matrix.artifact_path }}
