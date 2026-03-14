@@ -1,4 +1,4 @@
-name: Experiment CI
+name: Experiment CI Flow
 
 on:
   push:
@@ -8,26 +8,43 @@ on:
 
 jobs:
   build-test:
-    runs-on: windows-latest
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - name: CMake Version
         run: cmake --version
       - name: Configure
-        run: |
-          mkdir build
-          cd build
-          cmake ..
-      - name: Build
-        run: |
-          cd build
-          cmake --build . --config Release
-      - name: Test
-        run: |
-          cd build
-          ctest --output-on-failure -C Release
-      - name: Upload artifact
+        run: cmake -S . -B build
+
+      - name: Build (Windows)
+        if: runner.os == 'Windows'
+        run: cmake --build build --config Release
+
+      - name: Build (Linux)
+        if: runner.os == 'Linux'
+        run: cmake --build build
+
+      - name: Test (Windows)
+        if: runner.os == 'Windows'
+        run: ctest --test-dir build --output-on-failure -C Release
+
+      - name: Test (Linux)
+        if: runner.os == 'Linux'
+        run: ctest --test-dir build --output-on-failure
+
+      - name: Upload artifact (Windows)
+        if: runner.os == 'Windows'
         uses: actions/upload-artifact@v4
         with:
-          name: app-binary
+          name: app-binary-windows
           path: build/Release/app.exe
+
+      - name: Upload artifact (Linux)
+        if: runner.os == 'Linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-binary-linux
+          path: build/app
